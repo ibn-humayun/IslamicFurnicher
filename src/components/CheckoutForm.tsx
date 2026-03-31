@@ -1,4 +1,3 @@
-/** @jsx jsx */
 import { jsx } from 'hono/jsx'
 
 export const CheckoutForm = (props: { productName: string, price: number }) => {
@@ -7,7 +6,7 @@ export const CheckoutForm = (props: { productName: string, price: number }) => {
       <h2>অর্ডার করতে আপনার তথ্য দিন</h2>
       <p>পণ্য: {props.productName} - মূল্য: ৳ {props.price}</p>
       
-      <form action="/api/order" method="post">
+      <form action="/api/order" method="post" class="checkout-form-main">
         <div class="form-group">
           <label>আপনার নাম *</label>
           <input type="text" name="name" required placeholder="আপনার নাম লিখুন" />
@@ -20,22 +19,18 @@ export const CheckoutForm = (props: { productName: string, price: number }) => {
         
         <div class="form-group">
           <label>পুরো ঠিকানা *</label>
-          <textarea name="address" required placeholder="আপনার পুরো ঠিকানা লিখুন"></textarea>
+          <textarea name="address" required placeholder="আপনার পুরো ঠিকানা (গ্রাম, ডাকঘর, থানা, জেলা) লিখুন" rows={3}></textarea>
         </div>
         
-        <div class="form-group">
-          <label>ডিস্ট্রিক্ট *</label>
-          <select name="district" required>
-            <option value="">ডিস্ট্রিক্ট সিলেক্ট করুন</option>
-            <option value="dhaka">Dhaka</option>
-            <option value="chittagong">Chittagong</option>
-            {/* Other districts */}
-          </select>
-        </div>
-        
-        <button type="submit" class="btn" style="width: 100%; border: none; font-size: 1.2rem; cursor: pointer;">
-          অর্ডার করুন
+        <button type="submit" class="btn-submit-order">
+          অর্ডার কনফার্ম করুন
         </button>
+
+        <div class="trust-badges">
+          <span>📦 ক্যাশ অন ডেলিভারি</span>
+          <span>🚚 দ্রুত শিপিং</span>
+          <span>✨ প্রিমিয়াম কোয়ালিটি</span>
+        </div>
       </form>
     </div>
   )

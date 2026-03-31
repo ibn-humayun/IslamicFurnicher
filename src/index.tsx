@@ -3,39 +3,34 @@ import { serveStatic } from 'hono/cloudflare-pages'
 import { jsx } from 'hono/jsx'
 import { Home } from './pages/Home.js'
 import { Category } from './pages/Category.js'
-import { ProductLanding } from './pages/Product.js'
+import { Product } from './pages/Product.js'
+import { products } from './data/products.js'
 
 const app = new Hono()
 
-// Serve static files (CSS, images in public)
+// Serve static assets explicitly to avoid 404s in Pages Advanced Mode
+app.use('/images/*', serveStatic())
 app.use('/static/*', serveStatic())
+app.get('/index.css', serveStatic())
 
 // Routes
 app.get('/', (c) => c.html(<Home />))
+
 app.get('/category/:id', (c) => {
   const id = c.req.param('id')
   return c.html(<Category id={id} />)
 })
-app.get('/product/:slug', (c) => {
-  const slug = c.req.param('slug')
-  return c.html(<ProductLanding slug={slug} />)
+
+app.get('/product/:id', (c) => {
+  const id = c.req.param('id')
+  return c.html(<Product id={id} />)
 })
 
-// API Placeholders
+// API Routes
 app.post('/api/order', async (c) => {
   const body = await c.req.parseBody()
   console.log('Order received:', body)
   return c.json({ success: true, message: 'অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!' })
 })
-
-// Local Dev Server
-if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
-  const { serve } = await import('@hono/node-server')
-  serve({
-    fetch: app.fetch,
-    port: 3000,
-    hostname: '0.0.0.0'
-  })
-}
 
 export default app

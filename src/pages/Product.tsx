@@ -1,63 +1,96 @@
-/** @jsx jsx */
 import { jsx } from 'hono/jsx'
 import { MainLayout } from '../layouts/MainLayout.js'
-import { CheckoutForm } from '../components/CheckoutForm.js'
 import { products } from '../data/products.js'
 
-export const ProductLanding = (props: { slug: string }) => {
-  const product = products.find(p => p.slug === props.slug) || products[0]
-  const productName = product.name
-  const price = product.price
-  
-  return (
-    <MainLayout title={`Order ${productName} - Islamic Furniture`}>
-      <div style="background-color: #f7f7f7; padding: 2rem 0;">
-        <div style="max-width: 1000px; margin: 0 auto; text-align: center;">
-          <h1 style="color: var(--primary-orange); margin-bottom: 2rem;">{productName}</h1>
-          
-          {/* Sales Funnel Sections */}
-          <div style="background: white; padding: 2rem; border-radius: 12px; margin-bottom: 2rem;">
-            {/* Hero Image */}
-            <img src={product.image} alt={productName} style="width: 100%; border-radius: 12px;" />
-            
-            {/* Countdown / Urgency */}
-            <div style="background: var(--light-orange); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-              <h3>অফারটি শেষ হওয়ার বাকি: 12:45:30</h3>
-            </div>
-            
-            <a href="#checkout" class="btn" style="padding: 1rem 2rem; font-size: 1.25rem;">অর্ডার করতে নিচের ফর্মে যান</a>
-          </div>
+export const Product = (props: { id: string }) => {
+  const product = products.find(p => p.id === props.id)
+  if (!product) return <div>Product Not Found</div>
 
-          {/* Video Demonstration */}
-          {product.videoId && (
-            <div style="margin-bottom: 2rem;">
-              <h2>ভিডিও দেখুন</h2>
-              <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; height: auto; border-radius: 12px; background: #000;">
-                <iframe
-                  style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
-                  src={`https://www.youtube.com/embed/${product.videoId}?rel=0&showinfo=0&autoplay=0`}
-                  title="Product Video"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
+  return (
+    <MainLayout title={`${product.name} – Islamic Furniture`}>
+      <div class="product-landing">
+        <section class="hero-section">
+          <div class="container">
+            <img src={product.image} alt={product.name} style={{ maxWidth: '600px', borderRadius: '15px', boxShadow: 'var(--shadow-md)' }} />
+            <h1 class="hero-title">{product.name}</h1>
+            <p class="hero-subtitle">অরিজিনাল ইসলামিক ফার্নিচার - সরাসরি ফ্যাক্টরি থেকে</p>
+            
+            <div class="price-highlight">
+              {product.oldPrice && <span class="price-old-landing">৳{product.oldPrice}</span>}
+              <span class="price-new-landing">৳{product.price}</span>
+            </div>
+
+            <div class="hero-actions">
+              <a href="#order" class="btn-order-landing">অর্ডার করতে এখানে ক্লিক করুন</a>
+              <a href="tel:01830993087" class="btn-call-landing">সরাসরি কল করুন</a>
+            </div>
+
+            {product.videoId && (
+              <div class="video-container">
+                <iframe 
+                  src={`https://www.youtube.com/embed/${product.videoId}?autoplay=1&mute=1&loop=1&playlist=${product.videoId}`} 
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen>
+                </iframe>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {product.features && (
+          <section class="features-section">
+            <div class="container features-grid">
+              <div class="features-text">
+                <h2>পণ্যের বৈশিষ্ট্যসমূহ:</h2>
+                <ul class="features-list">
+                  {product.features.map(f => <li>{f}</li>)}
+                </ul>
+              </div>
+              <div class="features-image">
+                <img src={product.image} alt="Feature" style={{ width: '100%', borderRadius: '25px' }} />
               </div>
             </div>
-          )}
+          </section>
+        )}
 
-          {/* Features */}
-          <div style="text-align: left; margin-bottom: 2rem;">
-            <h2>বৈশিষ্ট্যসমূহ</h2>
-            <ul>
-              <li>হাই কোয়ালিটি মেটেরিয়াল</li>
-              <li>মার্জিত ও আধুনিক ডিজাইন</li>
-              <li>সহজেই দীর্ঘস্থায়ী ও টেকসই</li>
-              <li>৫ বছরের ওয়ারেন্টি</li>
-            </ul>
+        <section class="order-section" id="order">
+          <div class="container container-small">
+            <div class="order-wrapper">
+              <div class="order-header">
+                <h2>অর্ডার করতে আপনার তথ্য দিন</h2>
+                <p>পণ্য: {product.name} - মূল্য: ৳{product.price}</p>
+              </div>
+              
+              <div class="form-box">
+                <form action="/api/order" method="post">
+                  <div class="form-row">
+                    <label>আপনার নাম *</label>
+                    <input type="text" name="name" required placeholder="আপনার নাম লিখুন" />
+                  </div>
+                  
+                  <div class="form-row">
+                    <label>আপনার সম্পূর্ণ ঠিকানা *</label>
+                    <textarea name="address" required placeholder="আপনার সম্পূর্ণ ঠিকানা (গ্রাম, ডাকঘর, থানা, জেলা) লিখুন" rows={3}></textarea>
+                  </div>
+                  
+                  <div class="form-row">
+                    <label>আপনার ফোন নম্বর *</label>
+                    <input type="tel" name="phone" required placeholder="আপনার ফোন নম্বর লিখুন" />
+                  </div>
+                  
+                  <button type="submit" class="btn-submit">
+                    অর্ডার কনফার্ম করুন
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <div style={{ textAlign: 'center', marginTop: '40px' }}>
+              <img src="https://offer.islamicbazar.com.bd/wp-content/uploads/2024/09/money-1024x98.jpeg" alt="Trust Badges" style={{ maxWidth: '100%' }} />
+            </div>
           </div>
-
-          {/* Checkout Form */}
-          <CheckoutForm productName={productName} price={price} />
-        </div>
+        </section>
       </div>
     </MainLayout>
   )

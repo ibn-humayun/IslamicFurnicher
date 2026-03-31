@@ -25,10 +25,9 @@ jobs:
         run: npm run build
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: islamicfurnicher
-          directory: dist
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npx wrangler pages project create islamicfurnicher --production-branch main || true
+          npx wrangler pages deploy dist --project-name=islamicfurnicher --commit-dirty=true
+        env:
+          CLOUDFLARE_API_TOKEN: cfut_OIPKlle815jzyc0LuyNxSZO9bbpc9tBEtzebhRb5ea0d85ab
+          CLOUDFLARE_ACCOUNT_ID: a07121307aad920d9450bed6f8004922
